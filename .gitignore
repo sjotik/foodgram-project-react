@@ -104,11 +104,14 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.idea/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+.DS_Store
+.vscode/
 
 # Spyder project settings
 .spyderproject
@@ -128,5 +131,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# .idea
-.idea
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# testing
+
+
+# production
+/build
