@@ -5,7 +5,6 @@ from django.db import models
 
 USER_ROLES = (
     ('user', 'user'),
-    ('moderator', 'moderator'),
     ('admin', 'admin'),
 )
 
@@ -42,11 +41,6 @@ class User(AbstractUser):
         blank=True,
     )
 
-    bio = models.TextField(
-        verbose_name='О себе',
-        blank=True,
-    )
-
     role = models.CharField(
         verbose_name='Роль',
         max_length=15,
@@ -65,10 +59,6 @@ class User(AbstractUser):
                 name='unique_username_email',
             ),
         ]
-
-    @property
-    def is_moderator(self):
-        return self.role == 'moderator'
 
     @property
     def is_admin(self):
