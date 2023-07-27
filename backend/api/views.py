@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 
-# Create your views here.
+from recipes.models import Tag
+from .serializers import TagSeriaizer
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSeriaizer
+    pagination_class = None
