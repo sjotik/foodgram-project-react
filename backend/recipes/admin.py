@@ -1,9 +1,25 @@
 from django.contrib import admin
+from django.utils.safestring import SafeString, mark_safe
 
 
-from .models import Ingredient, Tag
+from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag, Subscribe
 
 
+class TagInline(admin.TabularInline):
+    model = RecipeTag
+    extra = 0
+    verbose_name = 'Тег рецепта'
+    verbose_name_plural = 'Теги рецепта'
+
+
+class IngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    extra = 0
+    verbose_name = 'Ингредиент рецепта'
+    verbose_name_plural = 'Ингредиенты рецепта'
+
+
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'color')
     search_fields = ('name', 'slug')
@@ -12,6 +28,7 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     search_fields = ('name',)
@@ -19,5 +36,24 @@ class IngredientAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'name', 'author', 'cooking_time', 'get_image',) # 'in_favorites')
+    list_display_links = ('name',)
+    search_fields = ('name', 'tags', 'author')
+    list_filter = ('tags__name', 'author__username')
+    inlines = (TagInline, IngredientInline)
+
+    def get_image(self, obj: Recipe) -> SafeString:
+        if obj.image:
+            return mark_safe(f'<img src={obj.image.url} width=50>')
+
+    get_image.short_description = 'Изображение'
+
+    def in_favorites(self, obj: Recipe) -> int:
+        ...
+
+@admin.register(Subscribe)
+class SubscribeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'author')
