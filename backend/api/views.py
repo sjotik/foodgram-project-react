@@ -6,8 +6,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from recipes.models import Favorite, Ingredient, Recipe, Subscribe, Tag
-# from users.views import UserViewSet
+from recipes.models import (
+    Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
 from .serializers import (
     IngredientSeriaizer,
@@ -63,6 +63,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
             favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
             favorite.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        url_name='shopping_cart',
+        url_path='shopping_cart',
+        # permission_classes=[]
+    )
+    def shopping_cart(self, request, pk=None):
+        user = request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            if recipe.in_shopping_cart.filter(user=user).exists():
+                return Response(
+                    {'errors': 'Рецепт уже в корзине'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            cart = ShoppingCart(user=user, recipe=recipe)
+            cart.save()
+            serializer = RecipeShowShortSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            if not recipe.in_shopping_cart.filter(user=user).exists():
+                return Response(
+                    {'errors': 'Рецепта в корзине нет'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            cart = get_object_or_404(ShoppingCart, user=user, recipe=recipe)
+            cart.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

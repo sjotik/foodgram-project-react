@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.gis.gdal.raster import source
-from rest_framework import serializers, validators
+from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
@@ -39,6 +38,7 @@ class RecipeShowSerializer(serializers.ModelSerializer):
     tags = TagSeriaizer(many=True)
     author = UserCustomSerializer()
     is_favorited = SerializerMethodField()
+    is_in_shopping_cart = SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -48,7 +48,7 @@ class RecipeShowSerializer(serializers.ModelSerializer):
             'author',
             'ingredients',
             'is_favorited',
-            # 'is_in_shopping_cart',
+            'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -61,6 +61,12 @@ class RecipeShowSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return obj.is_favorited.filter(user=user).exists()
+
+    def get_is_in_shopping_cart(self, obj: Recipe) -> bool:
+        user = self.context.get("request").user
+        if user.is_anonymous:
+            return False
+        return obj.in_shopping_cart.filter(user=user).exists()
 
 
 class RecipeShowShortSerializer(serializers.ModelSerializer):
