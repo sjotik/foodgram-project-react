@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.safestring import SafeString, mark_safe
 
 
-from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag, Subscribe
+from .models import (
+    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag)
 
 
 class TagInline(admin.TabularInline):
@@ -39,7 +40,7 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author', 'cooking_time', 'get_image',) # 'in_favorites')
+        'id', 'name', 'author', 'cooking_time', 'get_image',)
     list_display_links = ('name',)
     search_fields = ('name', 'tags', 'author')
     list_filter = ('tags__name', 'author__username')
@@ -51,9 +52,12 @@ class RecipeAdmin(admin.ModelAdmin):
 
     get_image.short_description = 'Изображение'
 
-    def in_favorites(self, obj: Recipe) -> int:
-        ...
 
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'author')
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'recipe')

@@ -1,20 +1,20 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from recipes.models import Ingredient, Recipe, Subscribe, Tag
+from recipes.models import Favorite, Ingredient, Recipe, Subscribe, Tag
 # from users.views import UserViewSet
 from users.models import User
 from .serializers import (
     IngredientSeriaizer,
     RecipeShowSerializer,
+    RecipeShowShortSerializer,
     SubscribeSerializer,
     TagSeriaizer,
-    UserCustomSerializer
     )
 
 
@@ -35,6 +35,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeShowSerializer
     # pagination_class = PageNumberPagination
 
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        url_name='favorite',
+        url_path='favorite',
+        # permission_classes=[]
+    )
+    def favorite(self, request, pk=None):
+        user = request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            if recipe.is_favorited.filter(user=user).exists():
+                return Response(
+                    {'errors': 'Рецепт уже в избранном'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            favorite = Favorite(user=user, recipe=recipe)
+            favorite.save()
+            serializer = RecipeShowShortSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            if not recipe.is_favorited.filter(user=user).exists():
+                return Response(
+                    {'errors': 'Такого рецепта в избранном нет'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
+            favorite.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class SubscribtionsApiView(ListAPIView):
     queryset = User.objects.all()
@@ -51,7 +81,7 @@ class SubscribeApiView(APIView):
 
     # permission_classes = []
 
-    def post(self, request, id):
+    def post(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, pk=id)
 
@@ -70,7 +100,7 @@ class SubscribeApiView(APIView):
         serializer = SubscribeSerializer(author, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete(self, request, id):
+    def delete(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, pk=id)
 

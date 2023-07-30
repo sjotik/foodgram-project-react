@@ -25,6 +25,7 @@ class RecipeShowSerializer(serializers.ModelSerializer):
     ingredients = IngredientSeriaizer(many=True)
     tags = TagSeriaizer(many=True)
     author = UserCustomSerializer()
+    is_favorited = SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -33,7 +34,7 @@ class RecipeShowSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            # 'is_favorited',
+            'is_favorited',
             # 'is_in_shopping_cart',
             'name',
             'image',
@@ -42,8 +43,14 @@ class RecipeShowSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('__all__',)
 
+    def get_is_favorited(self, obj: Recipe) -> bool:
+        user = self.context.get("request").user
+        if user.is_anonymous:
+            return False
+        return obj.is_favorited.filter(user=user).exists()
 
-class RecipeShowSubsSerializer(serializers.ModelSerializer):
+
+class RecipeShowShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
@@ -52,7 +59,7 @@ class RecipeShowSubsSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    recipes = RecipeShowSubsSerializer(many=True)
+    recipes = RecipeShowShortSerializer(many=True)
     recipes_count = SerializerMethodField()
     is_subscribed = SerializerMethodField()
 

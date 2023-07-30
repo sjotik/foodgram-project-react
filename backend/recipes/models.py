@@ -118,3 +118,30 @@ class Subscribe(models.Model):
 
     def __str__(self):
         return (f'{self.user} подписан на {self.author}')
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='have_favorite',
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='is_favorited',
+        verbose_name='Рецепт'
+    )
+
+    class Meta:
+        constraints = [models.UniqueConstraint(
+            fields=['user', 'recipe'],
+            name='unique_recipe_in_favorite'
+        )]
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
+        ordering = ('-id',)
+
+    def __str__(self) -> str:
+        return (f'{self.recipe} в избранном у {self.user}')
