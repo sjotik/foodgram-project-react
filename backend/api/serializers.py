@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.gis.gdal.raster import source
 from rest_framework import serializers, validators
 from rest_framework.serializers import SerializerMethodField
 
-from recipes.models import Ingredient, Recipe, Subscribe, Tag
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.serializers import UserCustomSerializer
 
 
@@ -21,8 +22,20 @@ class IngredientSeriaizer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
+class RecipeIndredientSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit')
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
 class RecipeShowSerializer(serializers.ModelSerializer):
-    ingredients = IngredientSeriaizer(many=True)
+    ingredients = RecipeIndredientSerializer(
+        many=True, source='with_ingredient')
     tags = TagSeriaizer(many=True)
     author = UserCustomSerializer()
     is_favorited = SerializerMethodField()

@@ -13,3 +13,4 @@ django-cors-headers==4.2.0
 flake8==6.0.0
 gunicorn==21.1.0
 python-dotenv==1.0.0
+Pillow==10.0.0

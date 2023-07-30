@@ -3,7 +3,7 @@ from django.utils.safestring import SafeString, mark_safe
 
 
 from .models import (
-    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag)
+    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag, RecipeIngredient)
 
 
 class TagInline(admin.TabularInline):
@@ -61,3 +61,8 @@ class SubscribeAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'ingredient', 'amount')

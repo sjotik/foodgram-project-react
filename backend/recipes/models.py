@@ -77,10 +77,23 @@ class RecipeTag(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='with_ingredient',
+        verbose_name='Рецепт',
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='in_recipe',
+        verbose_name='Ингредиент',
+    )
+    amount = models.PositiveIntegerField()
 
     class Meta:
+        verbose_name = "Игредиент в рецепте"
+        verbose_name_plural = "Ингредиенты в рецептах"
         constraints = [
             models.UniqueConstraint(
                 name='unique_recipe_ingredient',
