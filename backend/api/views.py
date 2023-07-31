@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, permission_classes
@@ -6,6 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.filters import RecipeFilterSet
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
@@ -33,7 +35,9 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeShowSerializer
-    # pagination_class = PageNumberPagination
+    pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RecipeFilterSet
 
     @action(
         detail=True,
