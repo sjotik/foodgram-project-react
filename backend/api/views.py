@@ -7,12 +7,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.filters import RecipeFilterSet
+from api.filters import IngredientsFilterSet, RecipeFilterSet
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
 from .serializers import (
     IngredientSeriaizer,
+    RecipeCreateSerializer,
     RecipeShowSerializer,
     RecipeShowShortSerializer,
     SubscribeSerializer,
@@ -30,6 +31,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSeriaizer
     pagination_class = None
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientsFilterSet
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -38,6 +41,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilterSet
+
+    def get_serializer_class(self):
+        if self.action == 'create' or self.action == 'update':
+            return RecipeCreateSerializer
+        return RecipeShowSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True,

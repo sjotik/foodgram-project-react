@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.gis.gdal.raster import source
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import SerializerMethodField
 
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from recipes.models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
 from users.serializers import UserCustomSerializer
 
 
@@ -30,6 +33,52 @@ class RecipeIndredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
+class RecipeIngredientAddSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient',
+        queryset=Ingredient.objects.all()
+    )
+    # amount = serializers.IntegerField()
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'amount')
+
+
+class RecipeCreateSerializer(serializers.ModelSerializer):
+    ingredients = RecipeIngredientAddSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+    image = Base64ImageField(required=False)
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
+
+    def create(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+        recipe = Recipe.objects.create(**validated_data)
+
+        for ingredient in ingredients:
+            ingr_obj = ingredient['ingredient']
+            amount = ingredient['amount']
+            RecipeIngredient(
+                recipe=recipe, ingredient=ingr_obj, amount=amount).save()
+
+        for tag in tags:
+            RecipeTag.objects.create(recipe=recipe, tag=tag)
+
+        return recipe
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeShowSerializer(instance, context=context).data
 
 
 class RecipeShowSerializer(serializers.ModelSerializer):

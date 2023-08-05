@@ -1,7 +1,7 @@
 from django_filters.rest_framework import (
-    BooleanFilter, FilterSet, ModelMultipleChoiceFilter)
+    CharFilter, BooleanFilter, FilterSet, ModelMultipleChoiceFilter)
 
-from recipes.models import Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilterSet(FilterSet):
@@ -29,3 +29,11 @@ class RecipeFilterSet(FilterSet):
             queryset = queryset.filter(
                 in_shopping_cart__user=self.request.user)
         return queryset
+
+
+class IngredientsFilterSet(FilterSet):
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+
+    class Meta:
+        model = Ingredient
+        fields = ['name']
