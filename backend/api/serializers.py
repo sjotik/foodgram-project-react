@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.contrib.gis.gdal.raster import source
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import SerializerMethodField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
@@ -40,7 +38,6 @@ class RecipeIngredientAddSerializer(serializers.ModelSerializer):
         source='ingredient',
         queryset=Ingredient.objects.all()
     )
-    # amount = serializers.IntegerField()
 
     class Meta:
         model = RecipeIngredient
@@ -75,6 +72,27 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return recipe
 
+    def update(self, recipe, validated_data):
+        recipe.name = validated_data.get('name', recipe.name)
+        recipe.image = validated_data.get('image', recipe.image)
+        recipe.text = validated_data.get('text', recipe.text)
+        recipe.cooking_time = validated_data.get(
+            'cooking_time', recipe.cooking_time)
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients', recipe)
+        recipe.save()
+        recipe.with_tags.all().delete()
+        for tag in tags:
+            RecipeTag.objects.create(recipe=recipe, tag=tag)
+        recipe.with_ingredients.all().delete()
+        for ingredient in ingredients:
+            ingr_obj = ingredient['ingredient']
+            amount = ingredient['amount']
+            RecipeIngredient(
+                recipe=recipe, ingredient=ingr_obj, amount=amount).save()
+
+        return recipe
+
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
@@ -83,7 +101,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 class RecipeShowSerializer(serializers.ModelSerializer):
     ingredients = RecipeIndredientSerializer(
-        many=True, source='with_ingredient')
+        many=True, source='with_ingredients')
     tags = TagSeriaizer(many=True)
     author = UserCustomSerializer()
     is_favorited = SerializerMethodField()

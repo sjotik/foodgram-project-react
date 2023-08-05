@@ -61,8 +61,16 @@ class Recipe(models.Model):
 
 
 class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='with_tags',
+        on_delete=models.CASCADE
+    )
+    tag = models.ForeignKey(
+        Tag,
+        related_name='in_recipes',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         constraints = [
@@ -80,7 +88,7 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='with_ingredient',
+        related_name='with_ingredients',
         verbose_name='Рецепт',
     )
     ingredient = models.ForeignKey(
