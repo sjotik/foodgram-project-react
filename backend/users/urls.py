@@ -1,8 +1,13 @@
 from django.urls import include, path
+from rest_framework import routers
 
 from api.views import SubscribeApiView, SubscribtionsApiView
+from .views import CustomUserViewset
 
 app_name = 'users'
+
+router_v1 = routers.DefaultRouter()
+router_v1.register(r'users', CustomUserViewset, basename='users')
 
 urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
@@ -16,5 +21,6 @@ urlpatterns = [
         SubscribeApiView.as_view(),
         name='subscribe'
          ),
-    path('', include('djoser.urls'), name='auth'),
+    path('', include(router_v1.urls)),
+    # path('', include('djoser.urls'), name='auth'),
 ]
