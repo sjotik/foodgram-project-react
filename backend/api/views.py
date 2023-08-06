@@ -19,6 +19,7 @@ from .serializers import (
     SubscribeSerializer,
     TagSeriaizer,
     )
+from .utils import CustomPagination
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -38,7 +39,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeShowSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilterSet
 
