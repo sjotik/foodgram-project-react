@@ -1,7 +1,7 @@
 import io
 
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
+from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -25,7 +25,7 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4, bottomup=0)
-    textobj = pdf.beginText(30*mm, 30*mm)
+    textobj = pdf.beginText(inch, inch)
     pdfmetrics.registerFont(TTFont(
         'Verdana', 'core/Verdana.ttf'))
     textobj.setFont('Verdana', 14)

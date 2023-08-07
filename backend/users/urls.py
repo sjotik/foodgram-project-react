@@ -15,11 +15,11 @@ urlpatterns = [
         'users/subscriptions/',
         SubscribtionsApiView.as_view(),
         name='subscriptions'
-         ),
+        ),
     path(
         'users/<int:id>/subscribe/',
         SubscribeApiView.as_view(),
         name='subscribe'
-         ),
+        ),
     path('', include(router_v1.urls)),
 ]
