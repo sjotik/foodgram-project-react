@@ -25,6 +25,8 @@ from .serializers import (
 
 
 class TagViewSet(viewsets.ModelViewSet):
+    """Вьюсет модели Тегов."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSeriaizer
     pagination_class = None
@@ -32,6 +34,8 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
+    """Вьюсет модели Ингредиентов."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSeriaizer
     pagination_class = None
@@ -41,6 +45,14 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """
+    Вьюсет модели Рецептов с дополнительными действиями
+    относительно ендпойнтов:
+        /favorite
+        /shopping_cart
+        /download_shopping_cart
+    """
+
     queryset = Recipe.objects.all()
     serializer_class = RecipeShowSerializer
     pagination_class = CustomPagination
@@ -132,6 +144,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class SubscribtionsApiView(ListAPIView):
+    """
+    Вьюсет модели Подписок, вызываемый
+    ендпойнтом '/subscriptions'
+    """
+
     queryset = User.objects.all()
     serializer_class = SubscribeSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -143,6 +160,9 @@ class SubscribtionsApiView(ListAPIView):
 
 
 class SubscribeApiView(APIView):
+    """
+    Вьюсет, обрабатывающий добавление/удаление подписки.
+    """
 
     permission_classes = [permissions.IsAuthenticated]
 

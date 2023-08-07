@@ -11,6 +11,10 @@ from recipes.models import Recipe
 
 
 def get_pdf_shopping_list(request: Request) -> io.BytesIO:
+    """
+    Сбор ингредиентов из рецептов в корзине с суммированием
+    количества свопадающих и возврат в pdf.
+    """
     user = request.user
     recipes = Recipe.objects.filter(in_shopping_cart__user=user)
     ingr_total = {}

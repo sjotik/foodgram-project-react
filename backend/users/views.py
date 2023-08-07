@@ -11,6 +11,8 @@ User = get_user_model()
 
 
 class CustomUserViewset(views.UserViewSet):
+    """Кастомизрованный UserViewset."""
+
     pagination_class = CustomPagination
     filter_backends = (filters.SearchFilter,)
     filter_fields = ('id',)

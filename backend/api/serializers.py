@@ -11,18 +11,26 @@ User = get_user_model()
 
 
 class TagSeriaizer(serializers.ModelSerializer):
+    """Сериализатор модели Тегов."""
+
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSeriaizer(serializers.ModelSerializer):
+    """Сериализатор модели Ингредиентов."""
+
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class RecipeIndredientSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для связывающей модели Рецепт-Ингредиент,
+    для вывода данных.
+    """
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -34,6 +42,10 @@ class RecipeIndredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientAddSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Рецепт-Ингредиент для добавления
+    записи при создании рецепта.
+    """
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         queryset=Ingredient.objects.all()
@@ -45,6 +57,10 @@ class RecipeIngredientAddSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Рецептов для создания записи.
+    """
+
     ingredients = RecipeIngredientAddSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
@@ -102,6 +118,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeShowSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели Рецептов для вывода данных.
+    """
+
     ingredients = RecipeIndredientSerializer(
         many=True, source='with_ingredients')
     tags = TagSeriaizer(many=True)
@@ -139,6 +159,10 @@ class RecipeShowSerializer(serializers.ModelSerializer):
 
 
 class RecipeShowShortSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели Рецептов для вывода сокращенной информации.
+    (для сериализатора модели Подписок)
+    """
 
     class Meta:
         model = Recipe
@@ -147,6 +171,8 @@ class RecipeShowShortSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Подписок."""
+
     recipes = RecipeShowShortSerializer(many=True)
     recipes_count = SerializerMethodField()
     is_subscribed = SerializerMethodField()
@@ -166,6 +192,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         read_only_fields = ("__all__",)
 
     def get_recipes_count(self, obj: User) -> int:
+        """Поле количества рецептов автора."""
         return obj.recipes.count()
 
     def get_is_subscribed(self, obj: User) -> bool:

@@ -5,6 +5,13 @@ from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilterSet(FilterSet):
+    """
+    Фильтр рецептов по полям:
+        is_favorited
+        is_in_shopping_cart
+        tags
+    """
+
     is_favorited = BooleanFilter(
         field_name='is_favorited', method='filter_is_favorited')
     is_in_shopping_cart = BooleanFilter(
@@ -32,6 +39,8 @@ class RecipeFilterSet(FilterSet):
 
 
 class IngredientsFilterSet(FilterSet):
+    """Фильтр для ингредиентов"""
+
     name = CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
