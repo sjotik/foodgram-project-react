@@ -3,7 +3,7 @@ from django.utils.safestring import SafeString, mark_safe
 
 
 from .models import (
-    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag, RecipeIngredient)
+    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag)
 
 
 class TagInline(admin.TabularInline):
@@ -40,17 +40,27 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author', 'cooking_time', 'get_image',)
+        'id', 'name', 'author', 'cooking_time', 'get_favorited', 'get_image',)
+    readonly_fields = ('author',)
     list_display_links = ('name',)
     search_fields = ('name', 'tags', 'author')
     list_filter = ('tags__name', 'author__username')
     inlines = (TagInline, IngredientInline)
+
+    def get_favorited(self, obj: Recipe) -> int:
+        return obj.is_favorited.count()
+
+    get_favorited.short_description = 'В избранном'
 
     def get_image(self, obj: Recipe) -> SafeString:
         if obj.image:
             return mark_safe(f'<img src={obj.image.url} width=50>')
 
     get_image.short_description = 'Изображение'
+
+    def save_model(self, request, obj, form, change):
+        obj.author = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Subscribe)

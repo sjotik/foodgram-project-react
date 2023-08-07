@@ -1,9 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
-from rest_framework.decorators import action, permission_classes
+from rest_framework import status, permissions, viewsets
+from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,6 +10,7 @@ from api.filters import IngredientsFilterSet, RecipeFilterSet
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
+from .permissions import IsAuthorOrAdmin
 from .serializers import (
     IngredientSeriaizer,
     RecipeCreateSerializer,
@@ -26,6 +26,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSeriaizer
     pagination_class = None
+    permission_classes = [permissions.AllowAny]
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = None
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientsFilterSet
+    permission_classes = [permissions.AllowAny]
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -42,10 +44,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilterSet
+    permission_classes = [IsAuthorOrAdmin]
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
-        # if self.action == 'create' or self.action == 'update':
-        #     return RecipeCreateSerializer
         if self.request.method in ('POST', 'PATCH'):
             return RecipeCreateSerializer
         return RecipeShowSerializer
@@ -58,7 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         url_name='favorite',
         url_path='favorite',
-        # permission_classes=[]
+        permission_classes=[permissions.IsAuthenticated]
     )
     def favorite(self, request, pk=None):
         user = request.user
@@ -88,7 +90,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         url_name='shopping_cart',
         url_path='shopping_cart',
-        # permission_classes=[]
+        permission_classes=[permissions.IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
         user = request.user
@@ -117,8 +119,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class SubscribtionsApiView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = SubscribeSerializer
-    # permission_classes = []
-    # pagination_class = PageNumberPagination
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -127,7 +129,7 @@ class SubscribtionsApiView(ListAPIView):
 
 class SubscribeApiView(APIView):
 
-    # permission_classes = []
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, id=None):
         user = request.user

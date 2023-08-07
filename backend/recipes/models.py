@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 
-from foodgram_backend.settings import LEN_LIMIT
+from foodgram_backend.settings import LEN_LIMIT, MIN_COOKING_TIME
 
 User = get_user_model()
 
@@ -23,7 +24,7 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         'Название', max_length=200, unique=True, blank=False)
-    measurement_unit = models.CharField('Единицы измерения', max_length=5)
+    measurement_unit = models.CharField('Единицы измерения', max_length=15)
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -40,7 +41,9 @@ class Recipe(models.Model):
     image = models.ImageField(
         'Изображение', null=True)
     cooking_time = models.PositiveIntegerField(
-        'Время приготовления',)  # !!! must be >= 1
+        'Время приготовления',
+        validators=[MinValueValidator(MIN_COOKING_TIME)]
+    )
     author = models.ForeignKey(
         User,
         related_name='recipes',

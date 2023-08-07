@@ -22,5 +22,4 @@ urlpatterns = [
         name='subscribe'
          ),
     path('', include(router_v1.urls)),
-    # path('', include('djoser.urls'), name='auth'),
 ]

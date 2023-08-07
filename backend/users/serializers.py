@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
-
 User = get_user_model()
 
 
@@ -26,10 +25,11 @@ class UserCustomSerializer(UserSerializer):
     def get_is_subscribed(self, obj: User) -> bool:
         """Поле проверки подписки на пользователя/автора."""
 
-        user = self.context.get("request").user
-        if user.is_anonymous or (user == obj):
-            return False
-        return user.subscriber.filter(author=obj).exists()
+        if self.context.get('request'):
+            user = self.context.get('request').user
+            if not (user.is_anonymous or (user == obj)):
+                return user.subscriber.filter(author=obj).exists()
+        return False
 
 
 class UserRegistrySerializer(UserCreateSerializer):
