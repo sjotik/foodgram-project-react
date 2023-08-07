@@ -4,7 +4,7 @@ from rest_framework import filters, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.utils import CustomPagination
+from api.paginators import CustomPagination
 from .serializers import UserCustomSerializer
 
 User = get_user_model()

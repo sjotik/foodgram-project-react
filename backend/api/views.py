@@ -1,5 +1,6 @@
-from django_filters.rest_framework import DjangoFilterBackend
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -7,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.filters import IngredientsFilterSet, RecipeFilterSet
+from core.utils import get_pdf_shopping_list
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
@@ -19,7 +21,7 @@ from .serializers import (
     SubscribeSerializer,
     TagSeriaizer,
     )
-from .utils import CustomPagination
+from .paginators import CustomPagination
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -114,6 +116,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
             cart = get_object_or_404(ShoppingCart, user=user, recipe=recipe)
             cart.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        methods=["GET"],
+        url_name='download_shopping_cart',
+        url_path='download_shopping_cart',
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        buffer = get_pdf_shopping_list(request)
+
+        return FileResponse(
+            buffer, as_attachment=True, filename='your_shopping_cart.pdf')
 
 
 class SubscribtionsApiView(ListAPIView):
