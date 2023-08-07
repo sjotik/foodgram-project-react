@@ -12,6 +12,7 @@ from core.utils import get_pdf_shopping_list
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Subscribe, Tag)
 from users.models import User
+from .paginators import CustomPagination
 from .permissions import IsAuthorOrAdmin
 from .serializers import (
     IngredientSeriaizer,
@@ -20,8 +21,7 @@ from .serializers import (
     RecipeShowShortSerializer,
     SubscribeSerializer,
     TagSeriaizer,
-    )
-from .paginators import CustomPagination
+)
 
 
 class TagViewSet(viewsets.ModelViewSet):

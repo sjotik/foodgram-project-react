@@ -6,6 +6,7 @@ volumes:
   media:
 
 services:
+
   db:
     image: postgres:13.10
     env_file: .env
@@ -31,12 +32,12 @@ services:
       - static:/static
 
   gateway:
-  depends_on:
+    depends_on:
       - frontend
     build: ./nginx/
     env_file: .env
     ports:
-      - 9000:80
+      - 9090:80
     volumes:
       - static:/static/
       - media:/media/

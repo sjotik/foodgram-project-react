@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.utils.safestring import SafeString, mark_safe
-
+from django.utils.safestring import mark_safe, SafeString
 
 from .models import (
     Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag)
@@ -33,7 +32,7 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit')
     search_fields = ('name',)
-    list_filter = ('name', 'measurement_unit')
+    list_filter = ('measurement_unit',)
     empty_value_display = '-пусто-'
 
 
@@ -44,7 +43,7 @@ class RecipeAdmin(admin.ModelAdmin):
     readonly_fields = ('author',)
     list_display_links = ('name',)
     search_fields = ('name', 'tags', 'author')
-    list_filter = ('tags__name', 'author__username')
+    list_filter = ('name', 'tags__name', 'author__username')
     inlines = (TagInline, IngredientInline)
 
     def get_favorited(self, obj: Recipe) -> int:
@@ -76,3 +75,8 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'recipe', 'ingredient', 'amount')
+
+
+@admin.register(RecipeTag)
+class RecipeTagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'tag')

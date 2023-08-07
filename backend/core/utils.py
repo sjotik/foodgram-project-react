@@ -26,7 +26,8 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4, bottomup=0)
     textobj = pdf.beginText(30*mm, 30*mm)
-    pdfmetrics.registerFont(TTFont('Verdana', 'Verdana.ttf'))
+    pdfmetrics.registerFont(TTFont(
+        'Verdana', 'core/Verdana.ttf'))
     textobj.setFont('Verdana', 14)
 
     for ingredient, amount in ingr_total.items():
