@@ -5,9 +5,11 @@ from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from rest_framework import serializers
 from rest_framework.request import Request
 
-from recipes.models import Recipe
+from foodgram_backend.settings import FONT_SIZE
+from recipes.models import Recipe, RecipeIngredient, RecipeTag
 
 
 def get_pdf_shopping_list(request: Request) -> io.BytesIO:
@@ -32,7 +34,7 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
     textobj = pdf.beginText(inch, inch)
     pdfmetrics.registerFont(TTFont(
         'Verdana', 'core/Verdana.ttf'))
-    textobj.setFont('Verdana', 14)
+    textobj.setFont('Verdana', FONT_SIZE)
 
     for ingredient, amount in ingr_total.items():
         textobj.textLine(
@@ -44,3 +46,22 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
     buffer.seek(0)
 
     return buffer
+
+
+def ingredients_tags_action(recipe: Recipe, ingrs: list, tags: list) -> None:
+    try:
+        recipe.with_ingredients.all().delete()
+        batch_ingrs = [
+                RecipeIngredient(recipe=recipe,
+                                 ingredient=ingredient['ingredient'],
+                                 amount=ingredient['amount']
+                                 ) for ingredient in ingrs
+            ]
+        RecipeIngredient.objects.bulk_create(batch_ingrs)
+
+        recipe.with_tags.all().delete()
+        batch_tags = [RecipeTag(recipe=recipe, tag=tag) for tag in tags]
+        RecipeTag.objects.bulk_create(batch_tags)
+
+    except Exception as ex:
+        raise serializers.ErrorDetail(ex)

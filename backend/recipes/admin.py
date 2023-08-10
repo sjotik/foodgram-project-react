@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe, SafeString
 
+from foodgram_backend.settings import MIN_VALUE
 from .models import (
-    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, Subscribe, Tag)
+    Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag, ShoppingCart, Subscribe, Tag)
 
 
 class TagInline(admin.TabularInline):
@@ -15,6 +16,7 @@ class TagInline(admin.TabularInline):
 class IngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 0
+    min_num = MIN_VALUE
     verbose_name = 'Ингредиент рецепта'
     verbose_name_plural = 'Ингредиенты рецепта'
 
@@ -80,3 +82,8 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 @admin.register(RecipeTag)
 class RecipeTagAdmin(admin.ModelAdmin):
     list_display = ('id', 'recipe', 'tag')
+
+
+@admin.register(ShoppingCart)
+class ScartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'recipe')

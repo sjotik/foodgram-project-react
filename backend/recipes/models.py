@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from foodgram_backend.settings import LEN_LIMIT, MIN_COOKING_TIME
+from foodgram_backend.settings import LEN_LIMIT, MAX_VALUE, MIN_VALUE
 
 User = get_user_model()
 
@@ -46,9 +46,12 @@ class Recipe(models.Model):
     text = models.TextField('Описание', blank=False)
     image = models.ImageField(
         'Изображение', null=True)
-    cooking_time = models.PositiveIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
-        validators=[MinValueValidator(MIN_COOKING_TIME)]
+        validators=[
+            MinValueValidator(MIN_VALUE),
+            MaxValueValidator(MAX_VALUE),
+        ],
     )
     author = models.ForeignKey(
         User,
@@ -82,8 +85,9 @@ class RecipeTag(models.Model):
     )
 
     class Meta:
-        verbose_name = "Тег рецепта"
-        verbose_name_plural = "Теги рецептов"
+        verbose_name = 'Тег рецепта'
+        verbose_name_plural = 'Теги рецептов'
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 name='unique_recipe_tag',
@@ -108,11 +112,18 @@ class RecipeIngredient(models.Model):
         related_name='in_recipe',
         verbose_name='Ингредиент',
     )
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveSmallIntegerField(
+        'Количество',
+        validators=[
+            MinValueValidator(MIN_VALUE),
+            MaxValueValidator(MAX_VALUE),
+        ],
+    )
 
     class Meta:
-        verbose_name = "Игредиент в рецепте"
-        verbose_name_plural = "Ингредиенты в рецептах"
+        verbose_name = 'Игредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 name='unique_recipe_ingredient',
@@ -139,8 +150,9 @@ class Subscribe(models.Model):
     )
 
     class Meta:
-        verbose_name = "Подписка"
-        verbose_name_plural = "Подписки"
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 name='unique_couple_subscribe',

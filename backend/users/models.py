@@ -13,7 +13,7 @@ class User(AbstractUser):
         blank=False,
         validators=[UnicodeUsernameValidator()],
         error_messages={
-            'unique': "Такой пользователь уже существует.",
+            'unique': 'Такой пользователь уже существует.',
         },
     )
     email = models.EmailField(
@@ -22,7 +22,7 @@ class User(AbstractUser):
         blank=False,
         unique=True,
         error_messages={
-            'unique': "Такой email уже зарегистрирован.",
+            'unique': 'Такой email уже зарегистрирован.',
         },
     )
     first_name = models.CharField(
