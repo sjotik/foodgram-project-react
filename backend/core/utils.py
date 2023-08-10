@@ -38,7 +38,7 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
 
     for ingredient, amount in ingr_total.items():
         textobj.textLine(
-            f"{ingredient.name}: {amount} {ingredient.measurement_unit}")
+            f'{ingredient.name}: {amount} {ingredient.measurement_unit}')
 
     pdf.drawText(textobj)
     pdf.showPage()
@@ -49,6 +49,8 @@ def get_pdf_shopping_list(request: Request) -> io.BytesIO:
 
 
 def ingredients_tags_action(recipe: Recipe, ingrs: list, tags: list) -> None:
+    """Метод комплексного добавления/обновления ингредиентов и тегов"""
+
     try:
         recipe.with_ingredients.all().delete()
         batch_ingrs = [
