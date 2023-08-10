@@ -175,7 +175,6 @@ class SubscribeApiView(APIView):
         context = {'user': user, 'author': author}
         serializer = SubscribeSerializer(author, data=data, context=context)
         serializer.is_valid(raise_exception=True)
-
         subscription = Subscribe(user=user, author=author)
         subscription.save()
 
