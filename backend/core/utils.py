@@ -52,11 +52,12 @@ def ingredients_tags_action(recipe: Recipe, ingrs: list, tags: list) -> None:
     try:
         recipe.with_ingredients.all().delete()
         batch_ingrs = [
-                RecipeIngredient(recipe=recipe,
-                                 ingredient=ingredient['ingredient'],
-                                 amount=ingredient['amount']
-                                 ) for ingredient in ingrs
-            ]
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=ingredient['ingredient'],
+                amount=ingredient['amount']
+            ) for ingredient in ingrs
+        ]
         RecipeIngredient.objects.bulk_create(batch_ingrs)
 
         recipe.with_tags.all().delete()
