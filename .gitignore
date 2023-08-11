@@ -143,3 +143,5 @@ node_modules/
 /build
 
 media/
+infra/
+*.bak
