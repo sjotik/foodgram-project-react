@@ -1,7 +1,7 @@
 <br/>
 <p align="center">
   <a href="https://github.com/sjotik/foodgram-project-react">
-    <img src="frontend/src/images/logo.svg" alt="Logo" width="80" height="80">
+    <img src="frontend/src/logo.svg" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">FOODGRAM</h3>
