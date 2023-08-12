@@ -172,7 +172,7 @@ class SubscribeApiView(APIView):
         user = request.user
         author = get_object_or_404(User, pk=id)
         data = {'recipes': []}
-        context = {'user': user, 'author': author}
+        context = {'request': request, 'user': user, 'author': author}
         serializer = SubscribeSerializer(author, data=data, context=context)
         serializer.is_valid(raise_exception=True)
         subscription = Subscribe(user=user, author=author)
