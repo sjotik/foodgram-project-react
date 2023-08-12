@@ -13,7 +13,7 @@
   </p>
 </p>
 
-![workflow](https://github.com/sjotik/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+[![workflow](https://github.com/sjotik/foodgram-project-react/actions/workflows/main.yaml/badge.svg)](https://github.com/sjotik/foodgram-project-react/actions/workflows/main.yaml)
 
 ## Table Of Contents
 
