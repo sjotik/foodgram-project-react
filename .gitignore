@@ -145,4 +145,3 @@ node_modules/
 media/
 /infra/
 *.bak
-docker-compose.yml
