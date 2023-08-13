@@ -1,10 +1,10 @@
 from http import HTTPStatus
 
+from django.conf import settings
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from foodgram_backend.settings import TEST_IMAGE
 from recipes.models import Ingredient, Tag, User
 
 
@@ -42,7 +42,7 @@ class FoodgramAPITestCase(TestCase):
             'name': 'TEST1',
             'text': 'TEST1',
             'cooking_time': 5,
-            'image': TEST_IMAGE,
+            'image': settings.TEST_IMAGE,
             'ingredients': [{'id': 1, 'amount': 150}],
             'tags': [1],
         }
