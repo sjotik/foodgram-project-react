@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 
 from core.utils import ingredients_tags_action
-from foodgram_backend.settings import MAX_VALUE, MIN_VALUE
 from recipes.models import (
     Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag)
 from users.serializers import UserCustomSerializer
@@ -54,7 +54,7 @@ class RecipeIngredientAddSerializer(serializers.ModelSerializer):
         queryset=Ingredient.objects.all()
     )
     amount = serializers.IntegerField(
-        max_value=MAX_VALUE, min_value=MIN_VALUE)
+        max_value=settings.MAX_VALUE, min_value=settings.MIN_VALUE)
 
     class Meta:
         model = RecipeIngredient
@@ -72,7 +72,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField(required=False)
     cooking_time = serializers.IntegerField(
-        max_value=MAX_VALUE, min_value=MIN_VALUE)
+        max_value=settings.MAX_VALUE, min_value=settings.MIN_VALUE)
 
     class Meta:
         model = Recipe

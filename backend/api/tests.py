@@ -43,7 +43,7 @@ class FoodgramAPITestCase(TestCase):
             'text': 'TEST1',
             'cooking_time': 5,
             'image': TEST_IMAGE,
-            'ingredients': [{"id": 1, "amount": 150}],
+            'ingredients': [{'id': 1, 'amount': 150}],
             'tags': [1],
         }
         response = self.client.post(url, data=data, format='json')

@@ -1,8 +1,8 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from foodgram_backend.settings import LEN_LIMIT, MAX_VALUE, MIN_VALUE
 
 User = get_user_model()
 
@@ -49,8 +49,8 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
         validators=[
-            MinValueValidator(MIN_VALUE),
-            MaxValueValidator(MAX_VALUE),
+            MinValueValidator(settings.MIN_VALUE),
+            MaxValueValidator(settings.MAX_VALUE),
         ],
     )
     author = models.ForeignKey(
@@ -69,7 +69,7 @@ class Recipe(models.Model):
         ordering = ('-id',)
 
     def __str__(self) -> str:
-        return self.name[:LEN_LIMIT]
+        return self.name[:settings.LEN_LIMIT]
 
 
 class RecipeTag(models.Model):
@@ -115,8 +115,8 @@ class RecipeIngredient(models.Model):
     amount = models.PositiveSmallIntegerField(
         'Количество',
         validators=[
-            MinValueValidator(MIN_VALUE),
-            MaxValueValidator(MAX_VALUE),
+            MinValueValidator(settings.MIN_VALUE),
+            MaxValueValidator(settings.MAX_VALUE),
         ],
     )
 

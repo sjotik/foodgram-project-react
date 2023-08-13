@@ -121,19 +121,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        else:
-            if not recipe.in_shopping_cart.filter(user=user).exists():
-                return Response(
-                    {'errors': 'Рецепта в корзине нет'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            cart = get_object_or_404(ShoppingCart, user=user, recipe=recipe)
-            cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if not recipe.in_shopping_cart.filter(user=user).exists():
+            return Response(
+                {'errors': 'Рецепта в корзине нет'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        cart = get_object_or_404(ShoppingCart, user=user, recipe=recipe)
+        cart.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
-        methods=["GET"],
+        methods=['GET'],
         url_name='download_shopping_cart',
         url_path='download_shopping_cart',
         permission_classes=[permissions.IsAuthenticated]
