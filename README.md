@@ -68,9 +68,3 @@ Distributed under the MIT License. See [LICENSE](https://github.com/sjotik/foodg
 ## Authors
 
 * [**Sjotik**](https://github.com/sjotik/)
-
-#### For Reviewer
-
-###### host: https://f-gram.ddns.net <br/>
-###### adminuser: admin@server.loc <br/>
-###### pwd: admin 
