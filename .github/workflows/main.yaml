@@ -116,7 +116,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Copy docker-compose.yml via ssh
       # uses: appleboy/ssh-action@master
-      uses: appleboy/ssh-action@v0.1.4
+      uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
